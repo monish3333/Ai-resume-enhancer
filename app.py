@@ -24,7 +24,8 @@ def get_feedback_and_rewrite(resume_text):
     }
 
     body = {
-    "model": "mistralai/mistral-7b-instruct",  # Valid and free
+    "model": "mistralai/mistral-7b-instruct",
+  # Valid and free
     "messages": [
         {
             "role": "user",
