@@ -24,7 +24,7 @@ def get_feedback_and_rewrite(resume_text):
     }
 
     body = {
-        "model": "mistralai/mistral-7b-instruct",
+        "model": "nousresearch/nous-hermes-2-mistral",
         "messages": [
             {"role": "user", "content": f"""
 Here's a resume:
