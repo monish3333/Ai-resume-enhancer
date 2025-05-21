@@ -43,7 +43,15 @@ Give feedback to improve it and rewrite the resume with professional formatting,
     )
 
     result = response.json()
+
+    # Show raw response in case of error
+    if "choices" not in result:
+        st.error("⚠️ API did not return expected output. Full response:")
+        st.code(json.dumps(result, indent=2))
+        raise Exception("Missing 'choices' in response")
+
     return result['choices'][0]['message']['content']
+
 
 def generate_docx(text):
     doc = Document()
