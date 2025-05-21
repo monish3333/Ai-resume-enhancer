@@ -24,17 +24,21 @@ def get_feedback_and_rewrite(resume_text):
     }
 
     body = {
-        "model": "nousresearch/nous-hermes-2-mistral",
-        "messages": [
-            {"role": "user", "content": f"""
+    "model": "mistralai/mistral-7b-instruct",  # Valid and free
+    "messages": [
+        {
+            "role": "user",
+            "content": f"""
 Here's a resume:
 
 {resume_text}
 
 Give feedback to improve it and rewrite the resume with professional formatting, tone, and clarity.
-"""}
-        ]
-    }
+"""
+        }
+    ]
+}
+
 
     response = requests.post(
         "https://openrouter.ai/api/v1/chat/completions",
