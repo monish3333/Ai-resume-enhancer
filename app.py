@@ -6,7 +6,7 @@ st.set_page_config(page_title="AI Resume Reviewer")
 
 st.title("📄 AI Resume Feedback Tool")
 
-openai.api_key = st.text_input("Enter your OpenAI API key", type="password")
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"])
 
