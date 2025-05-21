@@ -22,12 +22,13 @@ def get_feedback_and_rewrite(resume_text):
     1. Give professional feedback to improve it.
     2. Rewrite the resume with improved formatting, tone, and clarity.
     """
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7
     )
-    return response['choices'][0]['message']['content']
+    return response.choices[0].message.content
+
 
 if uploaded_file and openai.api_key:
     text = extract_text(uploaded_file)
