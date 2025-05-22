@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 import openai 
 import fitz  # PyMuPDF
 from io import BytesIO
