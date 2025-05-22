@@ -27,7 +27,7 @@ Give professional feedback to improve this resume. Then rewrite it with better f
     headers = {"Content-Type": "application/json"}
     
     body = {
-        "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",  # <-- your model
+        "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",
         "messages": [
             {"role": "user", "content": prompt}
         ],
