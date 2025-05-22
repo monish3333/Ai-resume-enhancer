@@ -20,21 +20,21 @@ def get_feedback_and_rewrite(resume_text):
     }
 
     body = {
-        "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",  # Your LM Studio model ID
-        "messages": [
-            {
-                "role": "user",
-                "content": f"""
+    "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",  # exact model id from your list
+    "messages": [
+        {
+            "role": "user",
+            "content": f"""
 Here's a resume:
 
 {resume_text}
 
-Give professional feedback to improve this resume. Then rewrite it with better formatting, tone, and clarity.
+Give feedback to improve it and rewrite the resume with professional formatting, tone, and clarity.
 """
-            }
-        ],
-        "temperature": 0.7
-    }
+        }
+    ],
+    "temperature": 0.7
+}
 
     try:
         response = requests.post(
