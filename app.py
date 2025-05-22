@@ -27,7 +27,7 @@ def get_feedback_and_rewrite(resume_text):
     }
 
     body = {
-        "model": "your-model-name-here",
+        "model": "7B-Instruct-v0.1-GGUF",
         "messages": [
             {"role": "user", "content": f"Improve this resume:\n\n{resume_text}"}
         ],
