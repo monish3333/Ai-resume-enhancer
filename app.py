@@ -1,7 +1,6 @@
 import streamlit as st
 import openai 
 import fitz  # PyMuPDF
-import requests
 import json
 from io import BytesIO
 from docx import Document
