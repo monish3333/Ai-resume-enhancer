@@ -1,3 +1,4 @@
+opeai
 streamlit
 requests
 PyMuPDF
