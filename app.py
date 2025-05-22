@@ -27,35 +27,23 @@ def get_feedback_and_rewrite(resume_text):
     }
 
     body = {
-        "model": "local-model",  # just a label
+        "model": "your-model-name-here",
         "messages": [
-            {
-                "role": "user",
-                "content": f"""
-Here's a resume:
-
-{resume_text}
-
-Give feedback to improve it and rewrite the resume with professional formatting, tone, and clarity.
-"""
-            }
-        ]
+            {"role": "user", "content": f"Improve this resume:\n\n{resume_text}"}
+        ],
+        "temperature": 0.7
     }
 
-    response = requests.post(
-        "http://127.0.0.1:1234/v1/chat/completions",  # LM Studio local server
-        headers=headers,
-        data=json.dumps(body)
-    )
-
+    response = requests.post("http://localhost:1234/v1/chat/completions", headers=headers, json=body)
     result = response.json()
 
     if "choices" not in result:
-        st.error("⚠️ API did not return expected output. Full response:")
+        st.error("⚠️ API did not return expected output.")
         st.code(json.dumps(result, indent=2))
         raise Exception("Missing 'choices' in response")
 
-    return result['choices'][0]['message']['content']
+    return result["choices"][0]["message"]["content"]
+
 
 
     # Show raw response in case of error
