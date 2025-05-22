@@ -1,4 +1,5 @@
 import streamlit as st
+import openai 
 import fitz  # PyMuPDF
 import requests
 import json
@@ -9,7 +10,7 @@ st.set_page_config(page_title="AI Resume Enhancer", page_icon="📄")
 
 st.title("📄 AI Resume Feedback & Rewriting Tool")
 
-api_key = st.secrets["OPENROUTER_API_KEY"]
+api_key = "lm-studio"  # dummy value for local use
 
 uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"])
 
@@ -17,28 +18,27 @@ def extract_text(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
     return "\n".join([page.get_text() for page in doc])
 
-def get_feedback_and_rewrite(resume_text):
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
 
-    body = {
-    "model": "mistralai/mistral-7b-instruct",
-  # Valid and free
-    "messages": [
-        {
-            "role": "user",
-            "content": f"""
+openai.api_key = "lm-studio"
+openai.api_base = "http://127.0.0.1:1234/v1"  # your local LM Studio server
+
+def get_feedback_and_rewrite(resume_text):
+    prompt = f"""
 Here's a resume:
 
 {resume_text}
 
 Give feedback to improve it and rewrite the resume with professional formatting, tone, and clarity.
 """
-        }
-    ]
-}
+
+    response = openai.ChatCompletion.create(
+        model="local-model",  # or use the actual model name from LM Studio
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+    )
+
+    return response['choices'][0]['message']['content']
+
 
 
     response = requests.post(
