@@ -22,37 +22,43 @@ openai.api_key = "lm-studio"
 openai.api_base = "http://127.0.0.1:1234/v1"  # your local LM Studio server
 
 def get_feedback_and_rewrite(resume_text):
-    headers = {
-        "Content-Type": "application/json"
-    }
+    prompt = f"""
+Here's a resume:
 
+{resume_text}
+
+Give professional feedback to improve this resume. Then rewrite it with better formatting, tone, and clarity.
+"""
+
+    headers = {"Content-Type": "application/json"}
+    
     body = {
-        "model": "7B-Instruct-v0.1-GGUF",
+        "model": "local-model",  # or use actual name from LM Studio
         "messages": [
-            {"role": "user", "content": f"Improve this resume:\n\n{resume_text}"}
+            {"role": "user", "content": prompt}
         ],
         "temperature": 0.7
     }
 
-    response = requests.post("http://localhost:1234/v1/chat/completions", headers=headers, json=body)
-    result = response.json()
+    try:
+        response = requests.post(
+            "http://127.0.0.1:1234/v1/chat/completions",
+            headers=headers,
+            data=json.dumps(body)
+        )
+        result = response.json()
 
-    if "choices" not in result:
-        st.error("⚠️ API did not return expected output.")
-        st.code(json.dumps(result, indent=2))
-        raise Exception("Missing 'choices' in response")
+        if "choices" not in result:
+            st.error("⚠️ Unexpected response from LM Studio:")
+            st.code(json.dumps(result, indent=2))
+            return "Error: No output received from the model."
 
-    return result["choices"][0]["message"]["content"]
+        return result["choices"][0]["message"]["content"]
 
-
-
-    # Show raw response in case of error
-    if "choices" not in result:
-        st.error("⚠️ API did not return expected output. Full response:")
-        st.code(json.dumps(result, indent=2))
-        raise Exception("Missing 'choices' in response")
-
-    return result['choices'][0]['message']['content']
+    except Exception as e:
+        st.error("❌ Failed to connect to LM Studio.")
+        st.code(str(e))
+        return "Error: Failed to connect to local AI model."
 
 
 def generate_docx(text):
