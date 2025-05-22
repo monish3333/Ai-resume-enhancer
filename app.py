@@ -6,8 +6,7 @@ from io import BytesIO
 from docx import Document
 
 st.set_page_config(page_title="AI Resume Enhancer", page_icon="📄")
-
-st.title("AI Resume Enhancer")
+st.title("📄 AI Resume Feedback & Rewriting Tool")
 
 uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"])
 
@@ -16,27 +15,30 @@ def extract_text(file):
     return "\n".join([page.get_text() for page in doc])
 
 def get_feedback_and_rewrite(resume_text):
-    prompt = f"""
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    body = {
+        "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",  # Your LM Studio model ID
+        "messages": [
+            {
+                "role": "user",
+                "content": f"""
 Here's a resume:
 
 {resume_text}
 
 Give professional feedback to improve this resume. Then rewrite it with better formatting, tone, and clarity.
 """
-
-    headers = {"Content-Type": "application/json"}
-    
-    body = {
-        "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",
-        "messages": [
-            {"role": "user", "content": prompt}
+            }
         ],
         "temperature": 0.7
     }
 
     try:
         response = requests.post(
-            "http://127.0.0.1:1234/v1/chat/completions",
+            "http://192.168.137.135:1234/v1/chat/completions",  # Updated to match LM Studio
             headers=headers,
             data=json.dumps(body)
         )
@@ -54,6 +56,7 @@ Give professional feedback to improve this resume. Then rewrite it with better f
         st.code(str(e))
         return "Error: Failed to connect to local AI model."
 
+
 def generate_docx(text):
     doc = Document()
     for line in text.split("\n"):
@@ -67,22 +70,26 @@ if uploaded_file:
     if st.button("Analyze Resume"):
         with st.spinner("Thinking..."):
             resume_text = extract_text(uploaded_file)
-            output = get_feedback_and_rewrite(resume_text)
-            st.text_area("🧠 AI Feedback & Rewritten Resume", output, height=500)
+            try:
+                output = get_feedback_and_rewrite(resume_text)
+                st.text_area("🧠 AI Feedback & Rewritten Resume", output, height=500)
 
-            # Download as TXT
-            st.download_button(
-                label="⬇️ Download as TXT",
-                data=output,
-                file_name="improved_resume.txt",
-                mime="text/plain"
-            )
+                # Download as TXT
+                st.download_button(
+                    label="⬇️ Download as TXT",
+                    data=output,
+                    file_name="improved_resume.txt",
+                    mime="text/plain"
+                )
 
-            # Download as DOCX
-            docx_file = generate_docx(output)
-            st.download_button(
-                label="⬇️ Download as DOCX",
-                data=docx_file,
-                file_name="improved_resume.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            )
+                # Download as DOCX
+                docx_file = generate_docx(output)
+                st.download_button(
+                    label="⬇️ Download as DOCX",
+                    data=docx_file,
+                    file_name="improved_resume.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
