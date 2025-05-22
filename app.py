@@ -21,31 +21,41 @@ openai.api_key = "lm-studio"
 openai.api_base = "http://127.0.0.1:1234/v1"  # your local LM Studio server
 
 def get_feedback_and_rewrite(resume_text):
-    prompt = f"""
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    body = {
+        "model": "local-model",  # just a label
+        "messages": [
+            {
+                "role": "user",
+                "content": f"""
 Here's a resume:
 
 {resume_text}
 
 Give feedback to improve it and rewrite the resume with professional formatting, tone, and clarity.
 """
-
-    response = openai.ChatCompletion.create(
-        model="local-model",  # or use the actual model name from LM Studio
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
-    )
-
-    return response['choices'][0]['message']['content']
-
-
+            }
+        ]
+    }
 
     response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
+        "http://127.0.0.1:1234/v1/chat/completions",  # LM Studio local server
         headers=headers,
         data=json.dumps(body)
     )
 
     result = response.json()
+
+    if "choices" not in result:
+        st.error("⚠️ API did not return expected output. Full response:")
+        st.code(json.dumps(result, indent=2))
+        raise Exception("Missing 'choices' in response")
+
+    return result['choices'][0]['message']['content']
+
 
     # Show raw response in case of error
     if "choices" not in result:
