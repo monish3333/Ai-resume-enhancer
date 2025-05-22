@@ -14,39 +14,41 @@ def extract_text(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
     return "\n".join([page.get_text() for page in doc])
 
+import requests
+import json
+
 def get_feedback_and_rewrite(resume_text):
     headers = {
         "Content-Type": "application/json"
     }
 
     body = {
-    "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",  # exact model id from your list
-    "messages": [
-        {
-            "role": "user",
-            "content": f"""
+        "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",  # ✅ your exact model ID
+        "messages": [
+            {
+                "role": "user",
+                "content": f"""
 Here's a resume:
 
 {resume_text}
 
-Give feedback to improve it and rewrite the resume with professional formatting, tone, and clarity.
+Give feedback to improve it and rewrite it with professional formatting, tone, and clarity.
 """
-        }
-    ],
-    "temperature": 0.7
-}
+            }
+        ],
+        "temperature": 0.7
+    }
 
     try:
         response = requests.post(
-    "http://192.168.137.135:1234/v1/chat/completions",
-    headers=headers,
-    data=json.dumps(body)
-)
-
+            "http://192.168.137.135:1234/v1/chat/completions",  # ✅ your local LM Studio server
+            headers=headers,
+            data=json.dumps(body)
+        )
         result = response.json()
 
         if "choices" not in result:
-            st.error("⚠️ Unexpected response from LM Studio:")
+            st.error("⚠️ LM Studio returned an unexpected response:")
             st.code(json.dumps(result, indent=2))
             return "Error: No output received from the model."
 
@@ -56,6 +58,7 @@ Give feedback to improve it and rewrite the resume with professional formatting,
         st.error("❌ Failed to connect to LM Studio.")
         st.code(str(e))
         return "Error: Failed to connect to local AI model."
+
 
 
 def generate_docx(text):
