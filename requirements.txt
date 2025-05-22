@@ -1,5 +1,5 @@
-opeai
 streamlit
-requests
+openai
 PyMuPDF
 python-docx
+requests
