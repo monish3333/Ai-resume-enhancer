@@ -38,10 +38,11 @@ Give feedback to improve it and rewrite the resume with professional formatting,
 
     try:
         response = requests.post(
-            "http://192.168.137.135:1234/v1/chat/completions",  # Updated to match LM Studio
-            headers=headers,
-            data=json.dumps(body)
-        )
+    "http://192.168.137.135:1234/v1/chat/completions",
+    headers=headers,
+    data=json.dumps(body)
+)
+
         result = response.json()
 
         if "choices" not in result:
