@@ -16,23 +16,20 @@ def extract_text(file):
     return "\n".join([page.get_text() for page in doc])
 
 def get_feedback_and_rewrite(resume_text):
-    headers = {
-        "Content-Type": "application/json"
-    }
-
-    body = {
-        "model": "local-model",  # Replace with your actual model name in LM Studio
-        "messages": [
-            {
-                "role": "user",
-                "content": f"""
+    prompt = f"""
 Here's a resume:
 
 {resume_text}
 
-Give feedback to improve it and rewrite the resume with professional formatting, tone, and clarity.
+Give professional feedback to improve this resume. Then rewrite it with better formatting, tone, and clarity.
 """
-            }
+
+    headers = {"Content-Type": "application/json"}
+    
+    body = {
+        "model": "tinyllama_-_tinyllama-1.1b-chat-v1.0",  # <-- your model
+        "messages": [
+            {"role": "user", "content": prompt}
         ],
         "temperature": 0.7
     }
@@ -50,10 +47,11 @@ Give feedback to improve it and rewrite the resume with professional formatting,
             st.code(json.dumps(result, indent=2))
             return "Error: No output received from the model."
 
-        return result['choices'][0]['message']['content']
+        return result["choices"][0]["message"]["content"]
 
     except Exception as e:
-        st.error(f"❌ Failed to connect to LM Studio: {e}")
+        st.error("❌ Failed to connect to LM Studio.")
+        st.code(str(e))
         return "Error: Failed to connect to local AI model."
 
 def generate_docx(text):
